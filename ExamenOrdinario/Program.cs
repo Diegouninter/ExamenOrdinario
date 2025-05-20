@@ -13,8 +13,8 @@ namespace ExamenOrdinario
             ConsultarSaldo = 1, Depositar, Retirar, HistorialDepositos, HistorialRetiros, Salir
         }
         static double saldo = 0;
-        static Dictionary<DateTime, double> Depositos = new Dictionary<DateTime, double>();
-        static Dictionary<DateTime, double> Retiros = new Dictionary<DateTime, double>();
+        static Dictionary<DateTime, double> HistorialDepositos = new Dictionary<DateTime, double>();
+        static Dictionary<DateTime, double> HistorialRetiros = new Dictionary<DateTime, double>();
 
         static void Main(string[] args)
         {
@@ -32,14 +32,10 @@ namespace ExamenOrdinario
                                 Console.WriteLine($"Tu saldo es de: {saldo}.");
                                 break;
                             case Menu.Depositar:
-                                Console.WriteLine("Introduce la cantidad a depositar: ");
-                                double deposito = Convert.ToDouble(Console.ReadLine());
-                                Console.WriteLine($"Has depositado {deposito}");
+                               
                                 break;
                             case Menu.Retirar:
-                                Console.WriteLine("Introduce la cantidad a retirar: ");
-                                double retiro = Convert.ToDouble(Console.ReadLine());
-                                Console.WriteLine($"Has retirado {retiro}");
+                               
                                 break;
                             case Menu.HistorialDepositos:
 
@@ -77,10 +73,11 @@ namespace ExamenOrdinario
             string usuario = Console.ReadLine();
             Console.WriteLine("Introduce tu contraseña: ");
             string contrasena = Console.ReadLine();
-            DateTime fechaNacimiento = Convert.ToDateTime(Console.ReadLine());
+            Console.WriteLine("Dame tu fecha de nacimiento:");
+            DateTime fecha = Convert.ToDateTime(Console.ReadLine());
             DateTime fechaActual = DateTime.Now;
-            int edad = fechaActual.Year - fechaNacimiento.Year;
-            if (usuario == "diego" && contrasena == "1234" && edad >= 18)
+            int años = fechaActual.Year - fecha.Year;
+            if (usuario == "diego" && contrasena == "1234" )
             {
                 return true;
             }
@@ -102,6 +99,33 @@ namespace ExamenOrdinario
             Console.Write("Selecciona una opción: ");
             Menu opc = (Menu)Convert.ToInt32(Console.ReadLine());
             return opc;
+        }
+        static double LeerDinero(string mensaje) 
+        {
+            Console.WriteLine(mensaje);
+            double cantidad = Convert.ToDouble(Console.ReadLine());
+            return cantidad;
+        }
+        static void Comprobante(string tipo, double Dinero) 
+        {
+            Console.WriteLine("¡Quieres que enviemos un comprobante por correo? (s/n):");
+            string respuesta = Console.ReadLine();
+            if (respuesta == "s" || respuesta == "S")
+            {
+                Console.WriteLine($"Se ha enviado un comprobante de {tipo} por ${Dinero}");
+            }
+            else
+            {
+                Console.WriteLine("No se envio ningun correo");
+            }
+        }
+        static void DepositarDinero() 
+        {
+            double dinero = LeerDinero("Ingresa dinero a depositar: ");
+            saldo += dinero;
+            HistorialDepositos.Add(DateTime.Now, dinero);
+            Console.WriteLine("Correcto deposito");
+            Comprobante("Deposito", dinero);
         }
     }
 }
