@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.Runtime.Remoting;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,18 +32,19 @@ namespace ExamenOrdinario
                         switch (Men())
                         {
                             case Menu.ConsultarSaldo:
-                                Console.WriteLine($"Tu saldo es de: {saldo}.");
+                                ConsultarDinero();
                                 break;
                             case Menu.Depositar:
-                               
+                                DepositarDinero();
                                 break;
                             case Menu.Retirar:
-                               
+                                retirar();
                                 break;
                             case Menu.HistorialDepositos:
-
+                                historialdep();
                                 break;
                             case Menu.HistorialRetiros:
+                                historialret();
 
                                 break;
                             case Menu.Salir:
@@ -66,7 +70,6 @@ namespace ExamenOrdinario
             }
             while (intentos >= 0);
         }
-
         static bool login()
         {
             Console.WriteLine("Introduce tu usuario: ");
@@ -77,7 +80,7 @@ namespace ExamenOrdinario
             DateTime fecha = Convert.ToDateTime(Console.ReadLine());
             DateTime fechaActual = DateTime.Now;
             int años = fechaActual.Year - fecha.Year;
-            if (usuario == "diego" && contrasena == "1234" )
+            if (usuario == "diego" && contrasena == "1234")
             {
                 return true;
             }
@@ -86,8 +89,6 @@ namespace ExamenOrdinario
                 return false;
             }
         }
-
-
         static Menu Men()
         {
             Console.WriteLine("1) Consultar saldo actual");
@@ -100,32 +101,102 @@ namespace ExamenOrdinario
             Menu opc = (Menu)Convert.ToInt32(Console.ReadLine());
             return opc;
         }
-        static double LeerDinero(string mensaje) 
+        static void ConsultarDinero()
+        {
+            Console.WriteLine($"Tu saldo es de: {saldo}.");
+        }
+        static double LeerDinero(string mensaje)
         {
             Console.WriteLine(mensaje);
             double cantidad = Convert.ToDouble(Console.ReadLine());
             return cantidad;
         }
-        static void Comprobante(string tipo, double Dinero) 
+        static void Comprobante(string tipo, double Dinero)
         {
-            Console.WriteLine("¡Quieres que enviemos un comprobante por correo? (s/n):");
+            Console.WriteLine("¿Quieres que enviemos un comprobante por correo? (s/n):");
             string respuesta = Console.ReadLine();
             if (respuesta == "s" || respuesta == "S")
             {
-                Console.WriteLine($"Se ha enviado un comprobante de {tipo} por ${Dinero}");
+                string remitente = "113302@alumnouninter.mx";
+                string contraseña = "DIEgmed0611";
+                string destitario = "113302@alumnouninter.mx";
+                string asunto = $"Comprobante de {tipo}";
+                string cuerpo = $"Se ha realizado un {tipo} de ${Dinero} el dia {DateTime.Now}.";
+                MailMessage mensaje = new MailMessage(remitente, destitario, asunto, cuerpo);
+                SmtpClient cliente = new SmtpClient("smtp.office365.com", 587)
+                {
+                    Credentials = new NetworkCredential(remitente, contraseña),
+                    EnableSsl = true
+                };
+
+                try
+                {
+                    cliente.Send(mensaje);
+                    Console.WriteLine($"Se ha enviado un comprobante de {tipo} por ${Dinero}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al enviar el correo: {ex.Message}");
+                }
+
             }
             else
             {
                 Console.WriteLine("No se envio ningun correo");
             }
         }
-        static void DepositarDinero() 
+        static void DepositarDinero()
         {
             double dinero = LeerDinero("Ingresa dinero a depositar: ");
             saldo += dinero;
             HistorialDepositos.Add(DateTime.Now, dinero);
             Console.WriteLine("Correcto deposito");
             Comprobante("Deposito", dinero);
+        }
+        static void retirar()
+        {
+            double ret = LeerDinero("ingresar dinero a retirar ");
+            if (saldo >= ret)
+            {
+                saldo -= ret;
+                HistorialRetiros.Add(DateTime.Now, ret);
+                Console.WriteLine("Retiro Correcto");
+                Comprobante("Retiro", ret);
+            }
+            else
+            {
+                Console.WriteLine("Error al hacer el retiro");
+            }
+        }
+        static void historialdep()
+        {
+            Console.WriteLine("Historial de depositos:");
+            if (HistorialDepositos.Count > 0)
+            {
+                foreach (var deposito in HistorialDepositos)
+                {
+                    Console.WriteLine($"{deposito.Key}:${deposito.Value}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No hay depositos registrados");
+            }
+        }
+        static void historialret()
+        {
+            Console.WriteLine("Historial de retiros:");
+            if (HistorialRetiros.Count > 0)
+            {
+                foreach (var retiro in HistorialRetiros)
+                {
+                    Console.WriteLine($"{retiro.Key}:${retiro.Value}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No hay retiros registrados");
+            }
         }
     }
 }
