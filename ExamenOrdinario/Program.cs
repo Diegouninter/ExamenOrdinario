@@ -91,13 +91,15 @@ namespace ExamenOrdinario
         }
         static Menu Men()
         {
+            Console.WriteLine( "---------------------------------");
+            Console.Write("Selecciona una opción: ");
             Console.WriteLine("1) Consultar saldo actual");
             Console.WriteLine("2) Depositar dinero");
             Console.WriteLine("3) Retirar dinero");
             Console.WriteLine("4) Consultar historial de depósito");
             Console.WriteLine("5) Consultar historial de retiros");
             Console.WriteLine("6) Salir");
-            Console.Write("Selecciona una opción: ");
+            Console.WriteLine("---------------------------------");
             Menu opc = (Menu)Convert.ToInt32(Console.ReadLine());
             return opc;
         }
@@ -121,7 +123,7 @@ namespace ExamenOrdinario
                 string contraseña = "DIEgmed0611";
                 string destitario = "113302@alumnouninter.mx";
                 string asunto = $"Comprobante de {tipo}";
-                string cuerpo = $"Se ha realizado un {tipo} de ${Dinero} el dia {DateTime.Now}.";
+                string cuerpo = $"Se ha realizado un {tipo}\n Monto ${Dinero} \n Se realizo el dia {DateTime.Now}.";
                 MailMessage mensaje = new MailMessage(remitente, destitario, asunto, cuerpo);
                 SmtpClient cliente = new SmtpClient("smtp.office365.com", 587)
                 {
