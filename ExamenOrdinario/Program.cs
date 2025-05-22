@@ -149,7 +149,7 @@ namespace ExamenOrdinario
         }
         static void DepositarDinero()
         {
-            double dinero = LeerDinero("Ingresa dinero a depositar: ");
+            double dinero = Convert.ToDouble(Console.ReadLine("Ingresa el dinero a depositar: "));
             saldo += dinero;
             HistorialDepositos.Add(DateTime.Now, dinero);
             Console.WriteLine("Correcto deposito");
@@ -157,7 +157,7 @@ namespace ExamenOrdinario
         }
         static void retirar()
         {
-            double ret = LeerDinero("ingresar dinero a retirar ");
+            double ret = Convert.ToDouble(Console.ReadLine("Ingresa el dinero a retirar: "));
             if (saldo >= ret)
             {
                 saldo -= ret;
